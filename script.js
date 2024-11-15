@@ -1,65 +1,62 @@
 const convertBtn = document.getElementById("convert-btn");
 const resultconverted = document.getElementById("result");
+const fromCurrency = document.getElementById("from-currency");
 const toCurrency = document.getElementById("to-currency");
 
+// Taxas de câmbio (exemplo fictício)
+const exchangeRates = {
+  BRL: 1,       // Base para Real
+  USD: 5.2,     // 1 Dólar = 5.2 Reais
+  EUR: 6.5,     // 1 Euro = 6.5 Reais
+  GBP: 7.3,     // 1 Libra = 7.3 Reais
+  BTC: 120000,  // 1 Bitcoin = 120.000 Reais
+};
+
+// Função para conversão de moedas
 function convertCurrency() {
-  const amount = document.getElementById("amount").value;
+  const amount = parseFloat(document.getElementById("amount").value);
 
-  const dolarToday = 5.2;
-  const euroToday = 6.5;
-  const libraToday = 7.3;
-  const bitcoinToday = 8.0;
-
-  if (toCurrency.value == "EUR") {
-    resultconverted.value = new Intl.NumberFormat("de-DE", {
-      style: "currency",
-
-      currency: "EUR",
-    }).format(amount / euroToday);
-  }
-  if (toCurrency.value == "USD") {
-    resultconverted.value = new Intl.NumberFormat("en-US", {
-      style: "currency",
-
-      currency: "USD",
-    }).format(amount / dolarToday);
+  if (isNaN(amount) || amount <= 0) {
+    resultconverted.value = "Insira um valor válido!";
+    return;
   }
 
-  if (toCurrency.value == "GBP") {
-    resultconverted.value = new Intl.NumberFormat("en-US", {
-      style: "currency",
+  const from = fromCurrency.value; // Moeda de origem
+  const to = toCurrency.value;     // Moeda de destino
 
-      currency: "GBP",
-    }).format(amount / libraToday);
-  }
+  // Calcula o valor em Reais a partir da moeda de origem
+  const amountInBRL = amount * exchangeRates[from];
 
-  if (toCurrency.value == "BTC") {
-    resultconverted.value = new Intl.NumberFormat("en-US", {
-      style: "currency",
+  // Converte para a moeda de destino
+  const convertedAmount = amountInBRL / exchangeRates[to];
 
-      currency: "BTC",
-    }).format(amount / bitcoinToday);
-  }
-
-  if (toCurrency.value == "BRL") {
-    resultconverted.value = new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-
-      currency: "BRL",
-    }).format(amount / bitcoinToday);
-  }
+  // Formata o valor para a moeda de destino
+  resultconverted.value = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: to,
+  }).format(convertedAmount);
 }
 
+// Função para trocar a imagem da moeda de destino
 function changeCurrency() {
-  const imagecurrency = document.getElementById("currency-image");
+  const imagecurrency = document.querySelector(".currency-image img"); // Seleciona o elemento <img> dentro do div
+
+  if (toCurrency.value === "USD") {
+    imagecurrency.src = "assets/dolar.png";
+  } else if (toCurrency.value === "EUR") {
+    imagecurrency.src = "assets/euro.png";
+  } else if (toCurrency.value === "GBP") {
+    imagecurrency.src = "assets/libra.png";
+  } else if (toCurrency.value === "BTC") {
+    imagecurrency.src = "assets/bitcoin.png";
+  } else if (toCurrency.value === "BRL") {
+    imagecurrency.src = "assets/real.png";
+  }
+
+  convertCurrency()
+  
 }
 
-if (changeCurrency.value == "USD") {
-  imagecurrency.src = "./assets/dolar.png";
-}
-
-if (changeCurrency.value == "EUR") {
-  imagecurrency.src = "./assets/euro.png";
-}
+// Adiciona eventos aos elementos
 toCurrency.addEventListener("change", changeCurrency);
 convertBtn.addEventListener("click", convertCurrency);
